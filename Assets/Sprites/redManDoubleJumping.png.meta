@@ -1,0 +1,494 @@
+fileFormatVersion: 2
+guid: 336940a9e8847463e96ed4b26fc325cf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8146336765851162498
+    second: redManDoubleJumping_0
+  - first:
+      213: 6119210219441969651
+    second: redManDoubleJumping_1
+  - first:
+      213: 5418543398187731883
+    second: redManDoubleJumping_2
+  - first:
+      213: -5591407725868838173
+    second: redManDoubleJumping_3
+  - first:
+      213: 6356971377759299857
+    second: redManDoubleJumping_4
+  - first:
+      213: -7764829189654568393
+    second: redManDoubleJumping_5
+  - first:
+      213: -8268852003015534763
+    second: redManDoubleJumping_6
+  - first:
+      213: 765307490128599417
+    second: redManDoubleJumping_7
+  - first:
+      213: 6715241001311906419
+    second: redManDoubleJumping_8
+  - first:
+      213: 5603719194648052100
+    second: redManDoubleJumping_9
+  - first:
+      213: -6332569986196504517
+    second: redManDoubleJumping_10
+  - first:
+      213: 8701366119159119769
+    second: redManDoubleJumping_11
+  - first:
+      213: 7708119390355696493
+    second: redManDoubleJumping_12
+  - first:
+      213: 2375207848864623882
+    second: redManDoubleJumping_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: redManDoubleJumping_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 68
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 287534d902a9d0170800000000000000
+      internalID: 8146336765851162498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_1
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 68
+        width: 17
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f957cb064dcbe450800000000000000
+      internalID: 6119210219441969651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_2
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 68
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bab84011388823b40800000000000000
+      internalID: 5418543398187731883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_3
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 68
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e296314c445762b0800000000000000
+      internalID: -5591407725868838173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_4
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 68
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1192ba299cf783850800000000000000
+      internalID: 6356971377759299857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_5
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 44
+        width: 12
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7322e09edf8cd3490800000000000000
+      internalID: -7764829189654568393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_6
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 45
+        width: 13
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5575bfbd9e22f3d80800000000000000
+      internalID: -8268852003015534763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_7
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 42
+        width: 13
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9799f058b1bee9a00800000000000000
+      internalID: 765307490128599417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_8
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 40
+        width: 11
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37aa550ac14513d50800000000000000
+      internalID: 6715241001311906419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_9
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 39
+        width: 13
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4810902fae864cd40800000000000000
+      internalID: 5603719194648052100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_10
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 15
+        width: 13
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b30057126213e18a0800000000000000
+      internalID: -6332569986196504517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_11
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 14
+        width: 17
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99f3911326671c870800000000000000
+      internalID: 8701366119159119769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_12
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 14
+        width: 15
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6ba3740fbdb8fa60800000000000000
+      internalID: 7708119390355696493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: redManDoubleJumping_13
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 9
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0dab4344fe66f020800000000000000
+      internalID: 2375207848864623882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      redManDoubleJumping_0: 8146336765851162498
+      redManDoubleJumping_1: 6119210219441969651
+      redManDoubleJumping_10: -6332569986196504517
+      redManDoubleJumping_11: 8701366119159119769
+      redManDoubleJumping_12: 7708119390355696493
+      redManDoubleJumping_13: 2375207848864623882
+      redManDoubleJumping_2: 5418543398187731883
+      redManDoubleJumping_3: -5591407725868838173
+      redManDoubleJumping_4: 6356971377759299857
+      redManDoubleJumping_5: -7764829189654568393
+      redManDoubleJumping_6: -8268852003015534763
+      redManDoubleJumping_7: 765307490128599417
+      redManDoubleJumping_8: 6715241001311906419
+      redManDoubleJumping_9: 5603719194648052100
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
