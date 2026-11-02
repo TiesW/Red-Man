@@ -1,13 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Restart : MonoBehaviour
 {
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.touchCount >= 1)
+        // Require a new tap, so a finger that's still down when dying doesn't restart instantly
+        if (TapInput.WasPressedThisFrame())
         {
             RedMan.restarted = true;
             SceneManager.LoadScene("Main");

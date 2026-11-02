@@ -3,318 +3,291 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class RedMan : MonoBehaviour
 {
-    Rigidbody2D rig;
-    Animator anim;
-    bool jumping = false;
-    bool doubleJumping = false;
-    bool jump = false;
-    bool doubleJump = false;
-    bool gameRunning = false;
-    bool gameLost = false;
-    bool spawnNext = true;
-    bool spawnNextPowerUp = true;
-    bool particlesAppeared = false;
+    private const string HighScoreKey = "Highscore";
+
+    // Game config:
+    private const float JumpHeight = 4.6f;
+    private const float SpawnX = 3.0f;
+    private const float MinSpawnInterval = 0.4f;
+    private const float MaxSpawnInterval = 0.6f;
+    private const float MinPowerUpSpawnInterval = 4.0f;
+    private const float MaxPowerUpSpawnInterval = 8.0f;
+    private const float MinObjectSpeed = 1.5f;
+    private const float MaxObjectSpeed = 3.0f;
+    private const float TimePowerUpChance = 0.7f; // the destroy powerup is more rare
+    private const float SlowDownDuration = 3.0f;
+
+    private static readonly int RunHash = Animator.StringToHash("Run");
+    private static readonly int JumpHash = Animator.StringToHash("Jump");
+    private static readonly int DoubleJumpHash = Animator.StringToHash("DoubleJump");
+    private static readonly WaitForSeconds ScoreInterval = new(0.1f);
+
     public static bool restarted = false;
-    System.Random rnd;
-    float blockYPos;
-    float powerUpYPos;
-    float blockSpeed;
-
-
-    //Game config:
-    float jumpHeight = 4.6f;
-
-    float minSpawnSpeed = 0.4f;
-    float maxSpawnSpeed = 0.6f;
-    float minPoSpawnSpeed = 4.0f;
-    float maxPoSpawnSpeed = 8.0f;
-
-
-
-    int scoreAmount = 0;
-    static int highScoreAmount;
 
     public Rigidbody2D square;
-    public Rigidbody2D powerUp1;
-    public Rigidbody2D powerUp2;
+    public Rigidbody2D timePowerUp;
+    public Rigidbody2D destroyPowerUp;
     public GameObject particles;
     public TMP_Text score;
     public TMP_Text highScore;
     public TMP_Text start;
     public TMP_Text restart;
-    public AudioSource sound;
-    public AudioSource sound2;
-    public AudioSource sound3;
+    public AudioSource jumpSound;
+    public AudioSource explodeSound;
+    public AudioSource deathSound;
 
+    private Rigidbody2D rig;
+    private Animator anim;
+    private Camera cam;
+    private bool jumping;
+    private bool doubleJumping;
+    private bool jumpRequested;
+    private bool gameRunning;
+    private bool gameLost;
+    private int scoreAmount;
+    private int highScoreAmount;
 
+    // Blocks and powerups that are currently moving across the screen
+    private readonly List<Rigidbody2D> movingObjects = new();
+    private float speedMultiplier = 1f;
+    private float slowDownEndTime;
+    private Coroutine slowDownRoutine;
 
     private void Start()
     {
-        rnd = new System.Random();
-        anim = gameObject.GetComponent<Animator>();
-        rig = gameObject.GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        rig = GetComponent<Rigidbody2D>();
+        cam = Camera.main;
 
-        highScoreAmount = PlayerPrefs.GetInt("Highscore");
-        highScore.text = "HS: " + highScoreAmount.ToString();
+        highScoreAmount = PlayerPrefs.GetInt(HighScoreKey);
+        highScore.text = "HS: " + highScoreAmount;
     }
 
-    void Update()
+    private void Update()
     {
-        if (!gameLost)
+        if (gameLost)
         {
-            if (gameRunning)
+            return;
+        }
+
+        if (gameRunning)
+        {
+            if (TapInput.WasPressedThisFrame())
             {
-                if (Input.touchCount >= 1)
-                {
-                    if (Input.GetTouch(0).phase == TouchPhase.Began)
-                    {
-                        if (!jumping)
-                        {
-                            anim.SetBool("Jump", true);
-                            anim.SetBool("Run", false);
-
-                            jump = true;
-                        }
-                        else if (jumping && !doubleJumping)
-                        {
-                            anim.SetBool("DoubleJump", true);
-                            anim.SetBool("Jump", false);
-                            anim.SetBool("Run", false);
-                            
-                            doubleJump = true;
-                        }
-                    }
-                }
-
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    if (!jumping)
-                    {
-                        anim.SetBool("Jump", true);
-                        anim.SetBool("Run", false);
-
-                        jump = true;
-                    }
-                    else if (jumping && !doubleJumping)
-                    {
-                        anim.SetBool("DoubleJump", true);
-                        anim.SetBool("Jump", false);
-                        anim.SetBool("Run", false);
-
-                        doubleJump = true;
-                    }
-                }
-
-                if (spawnNext)
-                {
-                    StartCoroutine("SpawnBlocks");
-                }
-                if (spawnNextPowerUp)
-                {
-                    StartCoroutine("SpawnPowerUps");
-                }
+                TryJump();
             }
-            else
-            {
-                if (Input.GetKeyDown(KeyCode.Space) || Input.touchCount >= 1 || restarted)
-                {
-                    start.gameObject.SetActive(false);
-                    gameRunning = true;
-                    anim.SetBool("Run", true);
-                    anim.SetBool("Jump", false);
-                    StartCoroutine("ScoreCounter");
-                }
-            }
+        }
+        else if (TapInput.IsPressedOrTouching() || restarted)
+        {
+            StartGame();
         }
     }
 
-    private void FixedUpdate() //Things involving physics (e.g. changing velocity) should be done in FixedUpdate rather than Update (which is better for input checks).
+    // Physics changes (like velocity) are done in FixedUpdate, input is handled in Update
+    private void FixedUpdate()
     {
-        if (jump)
+        if (jumpRequested)
         {
-            rig.linearVelocity = new Vector2(rig.linearVelocity.x, jumpHeight);
-            jump = false;
-            jumping = true; //Returns to false as soon as the player hits the ground.
-            sound.Play();
+            rig.linearVelocity = new Vector2(rig.linearVelocity.x, JumpHeight);
+            jumpRequested = false;
+            jumpSound.Play();
         }
-        if (doubleJump)
+    }
+
+    private void StartGame()
+    {
+        start.gameObject.SetActive(false);
+        gameRunning = true;
+        anim.SetBool(RunHash, true);
+        anim.SetBool(JumpHash, false);
+
+        StartCoroutine(ScoreCounter());
+        StartCoroutine(SpawnBlocks());
+        StartCoroutine(SpawnPowerUps());
+    }
+
+    private void TryJump()
+    {
+        if (!jumping)
         {
-            rig.linearVelocity = new Vector2(rig.linearVelocity.x, jumpHeight);
-            doubleJump = false;
+            jumping = true;
+            anim.SetBool(JumpHash, true);
+        }
+        else if (!doubleJumping)
+        {
             doubleJumping = true;
-            sound.Play();
+            anim.SetBool(DoubleJumpHash, true);
+            anim.SetBool(JumpHash, false);
         }
+        else
+        {
+            return;
+        }
+
+        anim.SetBool(RunHash, false);
+        jumpRequested = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.transform.name == "redManBG")
+        if (gameLost)
         {
+            return;
+        }
+
+        if (collision.gameObject.name == "redManBG")
+        {
+            // Landed on the ground
             jumping = false;
             doubleJumping = false;
             if (gameRunning)
             {
-                anim.SetBool("Run", true);
-                anim.SetBool("Jump", false);
+                anim.SetBool(RunHash, true);
+                anim.SetBool(JumpHash, false);
             }
-        } else
+        }
+        else
         {
-            gameRunning = false;
-            gameLost = true;
-            if (!particlesAppeared)
-            {
-                Instantiate(particles, gameObject.transform.position, Quaternion.identity);
-            }
-            particlesAppeared = true;
-            sound3.Play();
-            gameObject.SetActive(false);
-            restart.gameObject.SetActive(true);
-            //anim.SetBool("Died", true);
+            Die();
+        }
+    }
 
-            if (scoreAmount > PlayerPrefs.GetInt("Highscore"))
-            {
-                PlayerPrefs.SetInt("Highscore", highScoreAmount);
-            }
+    private void Die()
+    {
+        gameRunning = false;
+        gameLost = true;
+        Instantiate(particles, transform.position, Quaternion.identity);
+        deathSound.Play();
+        gameObject.SetActive(false);
+        restart.gameObject.SetActive(true);
+
+        if (scoreAmount > PlayerPrefs.GetInt(HighScoreKey))
+        {
+            PlayerPrefs.SetInt(HighScoreKey, scoreAmount);
+            PlayerPrefs.Save();
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name.Contains("Time"))
+        var isTimePowerUp = collision.gameObject.name.Contains("Time");
+        movingObjects.Remove(collision.attachedRigidbody);
+        Destroy(collision.gameObject);
+
+        if (isTimePowerUp)
         {
-            Destroy(collision.gameObject);
-            StartCoroutine("SlowDownBlocks");
-        } else
+            SlowDownObjects();
+        }
+        else
         {
-            Destroy(collision.gameObject);
-            ExplodeBlocks();
+            ExplodeObjects();
         }
     }
 
-    void ExplodeBlocks()
+    private void ExplodeObjects()
     {
-        foreach (var block in GameObject.FindGameObjectsWithTag("Block"))
+        movingObjects.RemoveAll(o => o == null);
+        if (movingObjects.Count == 0)
         {
-            Instantiate(particles, block.transform.position, Quaternion.identity);
-            Destroy(block);
-            sound2.Play();
+            return;
+        }
+
+        foreach (var obj in movingObjects)
+        {
+            Instantiate(particles, obj.position, Quaternion.identity);
+            Destroy(obj.gameObject);
+        }
+        movingObjects.Clear();
+        explodeSound.Play();
+    }
+
+    private Rigidbody2D Spawn(Rigidbody2D prefab, float y, float speed)
+    {
+        // Drop objects that have been destroyed off-screen
+        movingObjects.RemoveAll(x => x == null);
+
+        var clone = Instantiate(prefab, new Vector3(SpawnX, y, 0), Quaternion.identity);
+        clone.linearVelocity = Vector2.left * (speed * speedMultiplier);
+        movingObjects.Add(clone);
+        return clone;
+    }
+
+    private IEnumerator SpawnBlocks()
+    {
+        while (gameRunning)
+        {
+            // The shorter the interval, the less time between blocks spawning
+            yield return new WaitForSeconds(Random.Range(MinSpawnInterval, MaxSpawnInterval));
+
+            var topY = cam.ScreenToWorldPoint(new Vector2(0, Screen.height)).y;
+            var block = Spawn(square, Random.Range(-0.13f, topY), Random.Range(MinObjectSpeed, MaxObjectSpeed));
+            block.transform.localScale = new Vector3(Random.Range(0.27f, 0.36f), Random.Range(0.1f, 0.29f));
         }
     }
 
-
-
-
-    IEnumerator SpawnBlocks()
+    private IEnumerator SpawnPowerUps()
     {
-        blockYPos = Random.Range(-0.13f, Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height)).y);
-        blockSpeed = rnd.Next(15, 31) * .1f; //Creates a random float between 1.5 and 3.0;
+        while (gameRunning)
+        {
+            yield return new WaitForSeconds(Random.Range(MinPowerUpSpawnInterval, MaxPowerUpSpawnInterval));
 
-        float randomXDim = rnd.Next(27, 37) * .01f;
-        float randomYDim = rnd.Next(10, 30) * .01f;
-
-        float spawnSpeed = Random.Range(minSpawnSpeed, maxSpawnSpeed); //A randomized spawn speed within a small range, to things less predictable. The lower the spawn speed, the shorter the time between blocks spawning.
-
-        if (gameRunning){
-            spawnNext = false;
-
-            yield return new WaitForSeconds(spawnSpeed);
-
-            Rigidbody2D clone = Instantiate(square, new Vector3(3.0f, blockYPos, 0), Quaternion.identity);
-            clone.linearVelocity = transform.TransformDirection(Vector3.left * blockSpeed);
-            clone.transform.localScale = new Vector3(randomXDim, randomYDim);
-
-            spawnNext = true;
+            var powerUp = Random.value < TimePowerUpChance ? timePowerUp : destroyPowerUp;
+            // Only spawn powerups at heights the player can reach
+            Spawn(powerUp, Random.Range(-0.13f, 1.54f), Random.Range(MinObjectSpeed, MaxObjectSpeed));
         }
     }
 
-    IEnumerator SpawnPowerUps()
+    private void SlowDownObjects()
     {
-        powerUpYPos = Random.Range(-0.13f, 1.54f);  //The positions the player can reach.
-        blockSpeed = rnd.Next(15, 31) * .1f; //Creates a random float between 1.5 and 3.0;
+        // Picking up another hourglass while slowed down extends the duration
+        slowDownEndTime = Time.time + SlowDownDuration;
 
-        Rigidbody2D powerUp;
-        if(blockSpeed > 1.9f) //A simple way to somewhat randomly choose which powerup will spawn. I've set it so that the hammer powerup will be more rare.
-        {
-            powerUp = powerUp1;
-        } else
-        {
-            powerUp = powerUp2;
-        }
-
-        float poSpawnSpeed = Random.Range(minPoSpawnSpeed, maxPoSpawnSpeed);
-
-        if (gameRunning)
-        {
-            spawnNextPowerUp = false;
-
-            yield return new WaitForSeconds(poSpawnSpeed);
-
-            Rigidbody2D clonePO = Instantiate(powerUp, new Vector3(3.0f, powerUpYPos, 0), Quaternion.identity);
-            clonePO.linearVelocity = transform.TransformDirection(Vector3.left * blockSpeed);
-
-            spawnNextPowerUp = true;
-        }
+        slowDownRoutine ??= StartCoroutine(SlowDownRoutine());
     }
 
-    IEnumerator SlowDownBlocks()
+    private IEnumerator SlowDownRoutine()
     {
-        //Keep in mind that the blocks are moving to the left, so slowing them down means increasing their x-velocity.
+        // Halving each object's speed makes them slow down relative to their own speed. Objects spawned in the meantime use the multiplier too.
+        ScaleObjectSpeeds(0.5f);
 
-        float slowDownDuration = 3.0f;
-
-        while (slowDownDuration >= 0.0f)
+        while (Time.time < slowDownEndTime)
         {
-            slowDownDuration -= Time.deltaTime;
-            foreach(var block in GameObject.FindGameObjectsWithTag("Block")){
-                if (block.tag != "AlreadySlowedDown") //Only go through the blocks once, so their velocity isn't exponentionally halved. This also makes sure that blocks that spawn in the meantime will also be slowed down, since this loop keeps going until the slowdown time is over.
-                {
-                    block.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(block.GetComponent<Rigidbody2D>().linearVelocity.x / 2, 0f); //Simply halve each block's particular velocity, then later double it again. This way none of the blocks will completely come to a halt, and they will each slow down relative to their own speed as well.
-                    block.tag = "AlreadySlowedDown";
-                }
-            }
             yield return null;
         }
-        //After the slow-down time has passed, make the blocks return to their original velocity:
-        foreach (var block in GameObject.FindGameObjectsWithTag("AlreadySlowedDown"))
+
+        ScaleObjectSpeeds(2f);
+        slowDownRoutine = null;
+    }
+
+    private void ScaleObjectSpeeds(float factor)
+    {
+        speedMultiplier *= factor;
+        movingObjects.RemoveAll(o => o == null);
+
+        foreach (var obj in movingObjects)
         {
-            block.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(block.GetComponent<Rigidbody2D>().linearVelocity.x * 2, 0f);
-            block.tag = "Block"; //Set the tag back to Block in case the player picks up two hourglasses in quick succession where previously slowed down blocks are still on screen, so that they will slow down again.
+            obj.linearVelocity = new Vector2(obj.linearVelocity.x * factor, 0f);
         }
     }
 
-    IEnumerator ScoreCounter()
+    private IEnumerator ScoreCounter()
     {
         while (gameRunning)
         {
             scoreAmount++;
-            score.text = "S: " + scoreAmount.ToString();
+            score.text = "S: " + scoreAmount;
 
-            if(scoreAmount > highScoreAmount)
+            if (scoreAmount > highScoreAmount)
             {
-                highScoreAmount++;
-                highScore.text = "HS: " + highScoreAmount.ToString();
+                highScoreAmount = scoreAmount;
+                highScore.text = "HS: " + highScoreAmount;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return ScoreInterval;
         }
     }
-
-
-
-    //void MayhemMode() //Call this in Update
-    //{
-    //    for (int i = 0; i < 20; i++)
-    //    {
-    //        Rigidbody2D clone = Instantiate(square, transform.position, transform.rotation);
-    //        clone.transform.position = new Vector3(i * 0.1f, 0, 0);
-
-    //        clone.velocity = transform.TransformDirection(Vector3.left * 10);
-    //    }
-    //}
-
-    //Another mayhem thing:
-    //  minSpawnSpeed /= 2;
-    //  maxSpawnSpeed /= 2;
 }
