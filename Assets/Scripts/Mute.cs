@@ -5,6 +5,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class Mute : MonoBehaviour
 {
+    private const string MutedKey = "Muted";
+
     public static bool muted;
     public Sprite muteSprite;
     public Sprite mutedSprite;
@@ -14,21 +16,29 @@ public class Mute : MonoBehaviour
     private void Awake()
     {
         image = GetComponent<Image>();
-        UpdateSprite();
+        muted = PlayerPrefs.GetInt(MutedKey) == 1;
+
+        ApplyMuted();
     }
 
     public void MuteSound()
     {
         muted = !muted;
-        AudioListener.volume = muted ? 0 : 1;
-        UpdateSprite();
+
+        ApplyMuted();
+
+        // Save the muted state to PlayerPrefs
+        PlayerPrefs.SetInt(MutedKey, muted ? 1 : 0);
+        PlayerPrefs.Save();
 
         // Deselect so Space (Submit) doesn't toggle the button again
         EventSystem.current.SetSelectedGameObject(null);
     }
 
-    private void UpdateSprite()
+    private void ApplyMuted()
     {
+        AudioListener.volume = muted ? 0 : 1;
+
         image.sprite = muted ? mutedSprite : muteSprite;
     }
 }
