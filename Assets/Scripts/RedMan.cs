@@ -33,9 +33,11 @@ public class RedMan : MonoBehaviour
     public TMP_Text highScore;
     public TMP_Text start;
     public TMP_Text restart;
+    public ScorePopup scorePopup;
     public AudioSource jumpSound;
     public AudioSource explodeSound;
     public AudioSource deathSound;
+    public AudioSource diamondSound;
 
     private Rigidbody2D rig;
     private Animator anim;
@@ -256,16 +258,20 @@ public class RedMan : MonoBehaviour
     {
         while (gameRunning)
         {
-            scoreAmount++;
-            score.text = "S: " + scoreAmount;
-
-            if (scoreAmount > highScoreAmount)
-            {
-                highScoreAmount = scoreAmount;
-                highScore.text = "HS: " + highScoreAmount;
-            }
-
+            AddScore(1);
             yield return ScoreInterval;
+        }
+    }
+
+    public void AddScore(int amount)
+    {
+        scoreAmount += amount;
+        score.text = "S: " + scoreAmount;
+
+        if (scoreAmount > highScoreAmount)
+        {
+            highScoreAmount = scoreAmount;
+            highScore.text = "HS: " + highScoreAmount;
         }
     }
 }
