@@ -18,8 +18,6 @@ public class RedMan : MonoBehaviour
     private const float MaxPowerUpSpawnInterval = 8.0f;
     private const float MinObjectSpeed = 1.5f;
     private const float MaxObjectSpeed = 3.0f;
-    private const float TimePowerUpChance = 0.7f; // the destroy powerup is more rare
-    private const float SlowDownDuration = 3.0f;
 
     private static readonly int RunHash = Animator.StringToHash("Run");
     private static readonly int JumpHash = Animator.StringToHash("Jump");
@@ -29,8 +27,7 @@ public class RedMan : MonoBehaviour
     public static bool restarted = false;
 
     public Rigidbody2D square;
-    public Rigidbody2D timePowerUp;
-    public Rigidbody2D destroyPowerUp;
+    public PowerUpBase[] powerUps;
     public GameObject particles;
     public TMP_Text score;
     public TMP_Text highScore;
@@ -51,11 +48,9 @@ public class RedMan : MonoBehaviour
     private int scoreAmount;
     private int highScoreAmount;
 
-    // Blocks and powerups that are currently moving across the screen
+    // Blocks and power-ups that are currently moving across the screen
     private readonly List<Rigidbody2D> movingObjects = new();
     private float speedMultiplier = 1f;
-    private float slowDownEndTime;
-    private Coroutine slowDownRoutine;
 
     private void Start()
     {
@@ -174,45 +169,27 @@ public class RedMan : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        var isTimePowerUp = collision.gameObject.name.Contains("Time");
-        movingObjects.Remove(collision.attachedRigidbody);
-        Destroy(collision.gameObject);
-
-        if (isTimePowerUp)
-        {
-            SlowDownObjects();
-        }
-        else
-        {
-            ExplodeObjects();
-        }
-    }
-
-    private void ExplodeObjects()
-    {
-        movingObjects.RemoveAll(o => o == null);
-        if (movingObjects.Count == 0)
+        if (!collision.TryGetComponent<PowerUpBase>(out var powerUp))
         {
             return;
         }
 
-        foreach (var obj in movingObjects)
-        {
-            Instantiate(particles, obj.position, Quaternion.identity);
-            Destroy(obj.gameObject);
-        }
-        movingObjects.Clear();
-        explodeSound.Play();
+        movingObjects.Remove(collision.attachedRigidbody);
+        powerUp.Activate(this);
+    }
+
+    // Blocks and power-ups that are currently on screen, without the ones that have been destroyed
+    public List<Rigidbody2D> GetMovingObjects()
+    {
+        movingObjects.RemoveAll(o => o == null);
+        return movingObjects;
     }
 
     private Rigidbody2D Spawn(Rigidbody2D prefab, float y, float speed)
     {
-        // Drop objects that have been destroyed off-screen
-        movingObjects.RemoveAll(x => x == null);
-
         var clone = Instantiate(prefab, new Vector3(SpawnX, y, 0), Quaternion.identity);
         clone.linearVelocity = Vector2.left * (speed * speedMultiplier);
-        movingObjects.Add(clone);
+        GetMovingObjects().Add(clone);
         return clone;
     }
 
@@ -235,40 +212,41 @@ public class RedMan : MonoBehaviour
         {
             yield return new WaitForSeconds(Random.Range(MinPowerUpSpawnInterval, MaxPowerUpSpawnInterval));
 
-            var powerUp = Random.value < TimePowerUpChance ? timePowerUp : destroyPowerUp;
-            // Only spawn powerups at heights the player can reach
+            var powerUp = PickRandomPowerUp().GetComponent<Rigidbody2D>();
+            // Only spawn power-ups at heights the player can reach
             Spawn(powerUp, Random.Range(-0.13f, 1.54f), Random.Range(MinObjectSpeed, MaxObjectSpeed));
         }
     }
 
-    private void SlowDownObjects()
+    // Picks a power-up where each one's chance is its weight relative to the total weight
+    private PowerUpBase PickRandomPowerUp()
     {
-        // Picking up another hourglass while slowed down extends the duration
-        slowDownEndTime = Time.time + SlowDownDuration;
-
-        slowDownRoutine ??= StartCoroutine(SlowDownRoutine());
-    }
-
-    private IEnumerator SlowDownRoutine()
-    {
-        // Halving each object's speed makes them slow down relative to their own speed. Objects spawned in the meantime use the multiplier too.
-        ScaleObjectSpeeds(0.5f);
-
-        while (Time.time < slowDownEndTime)
+        var totalWeight = 0f;
+        foreach (var powerUp in powerUps)
         {
-            yield return null;
+            totalWeight += powerUp.SpawnWeight;
         }
 
-        ScaleObjectSpeeds(2f);
-        slowDownRoutine = null;
+        var roll = Random.value * totalWeight;
+        foreach (var powerUp in powerUps)
+        {
+            roll -= powerUp.SpawnWeight;
+            if (roll < 0f)
+            {
+                return powerUp;
+            }
+        }
+        // Only reached through float rounding when the roll lands on the total
+        return powerUps[^1];
     }
 
-    private void ScaleObjectSpeeds(float factor)
+    public void SetSlowedDown(bool slowed)
     {
+        // Halving each object's speed makes them slow down relative to their own speed. Objects spawned in the meantime use the multiplier too.
+        var factor = slowed ? 0.5f : 2f;
         speedMultiplier *= factor;
-        movingObjects.RemoveAll(o => o == null);
 
-        foreach (var obj in movingObjects)
+        foreach (var obj in GetMovingObjects())
         {
             obj.linearVelocity = new Vector2(obj.linearVelocity.x * factor, 0f);
         }

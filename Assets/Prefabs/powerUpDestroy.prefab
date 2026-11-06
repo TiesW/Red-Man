@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3923597910607343936}
   - component: {fileID: 7716878382539042228}
   - component: {fileID: 5533135673283512774}
+  - component: {fileID: 2718281828459045235}
   m_Layer: 0
   m_Name: powerUpDestroy
   m_TagString: Block
@@ -130,3 +131,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 6
+--- !u!114 &2718281828459045235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4328871004304531781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae5185573e2949de97de64ba1c450f1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnWeight: 3
